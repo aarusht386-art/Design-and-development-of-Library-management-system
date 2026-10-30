@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibraryMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5fa;--surface:#fff;--surface2:#eef1f8;--border:rgba(10,25,60,.09);--text:#0f1c3a;--muted:#6a7595;--navy:#0b1f4d;--accent:#2f5bea;--teal:#14b8a6;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--shadow:0 2px 10px rgba(10,25,60,.06);--r:12px}
+html[data-theme=dark]{--bg:#0a1226;--surface:#111c38;--surface2:#18264a;--border:rgba(255,255,255,.09);--text:#e8ecf8;--muted:#8d99bb;--navy:#060d1f;--shadow:0 2px 12px rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:14px 'Sora',sans-serif;min-height:100vh;transition:background .2s,color .2s}
+button,input,select{font:inherit;color:inherit}
+.hide{display:none!important}
+/* login */
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.login-brand{background:linear-gradient(160deg,var(--navy),#1d3a8a);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:center}
+.login-brand h1{font-size:34px;letter-spacing:-1px;margin-bottom:12px}.login-brand p{opacity:.75;max-width:360px;line-height:1.6}
+.shelf{display:flex;gap:6px;align-items:flex-end;margin-top:36px;height:90px}.shelf i{width:18px;border-radius:3px 3px 0 0;background:var(--teal);opacity:.85}
+.login-form{display:flex;align-items:center;justify-content:center;padding:32px}.login-card{width:360px;max-width:100%}
+.login-card h2{font-size:22px;margin-bottom:4px}.login-card .sub{color:var(--muted);margin-bottom:22px}
+/* layout */
+.sidebar{position:fixed;inset:0 auto 0 0;width:232px;background:var(--navy);color:#cfd8f3;display:flex;flex-direction:column;padding:22px 0;z-index:30;transition:transform .2s}
+.brand{padding:0 22px 20px;font-weight:700;font-size:16px;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px}.brand small{display:block;font:400 11px 'JetBrains Mono';opacity:.6;margin-top:3px}
+.nav{display:flex;align-items:center;gap:11px;padding:11px 22px;cursor:pointer;border-left:3px solid transparent;color:#aab6dc;transition:.15s}
+.nav:hover{background:rgba(255,255,255,.05);color:#fff}.nav.active{background:rgba(47,91,234,.22);color:#fff;border-left-color:var(--teal)}
+.side-foot{margin-top:auto;padding:16px 22px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;display:flex;flex-direction:column;gap:10px}
+.main{margin-left:232px;padding:0 32px 40px}
+.topbar{display:flex;align-items:center;gap:14px;padding:20px 0;position:sticky;top:0;background:var(--bg);z-index:10}
+.topbar h1{font-size:20px;letter-spacing:-.4px;flex:1}.burger{display:none}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600}
+/* components */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:10px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:.15s;font-size:13px}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn-primary:hover{background:#2449c4}
+.btn-danger{color:var(--red);border-color:rgba(239,68,68,.35)}.btn-ok{color:var(--green);border-color:rgba(16,185,129,.4)}.btn-sm{padding:5px 10px;font-size:12px}.btn:disabled{opacity:.5;cursor:wait}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:20px}
+.stat .l{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}.stat .v{font:600 26px 'JetBrains Mono'}
+.stat{border-top:3px solid var(--accent)}.stat.t{border-top-color:var(--teal)}.stat.r{border-top-color:var(--red)}.stat.a{border-top-color:var(--amber)}.stat.g{border-top-color:var(--green)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.row .grow{flex:1;min-width:180px}
+.table-wrap{overflow-x:auto;padding:0}table{width:100%;border-collapse:collapse;min-width:560px}
+th{background:var(--surface2);text-align:left;padding:11px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:500}
+td{padding:12px 16px;border-top:1px solid var(--border);vertical-align:middle}tbody tr:hover{background:var(--surface2)}.mono{font-family:'JetBrains Mono';font-size:12px;color:var(--muted)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.b-green{background:rgba(16,185,129,.13);color:var(--green)}.b-red{background:rgba(239,68,68,.13);color:var(--red)}.b-amber{background:rgba(245,158,11,.15);color:#c98200}.b-blue{background:rgba(47,91,234,.12);color:var(--accent)}.b-grey{background:var(--surface2);color:var(--muted)}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface2);outline:none}input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,91,234,.15)}
+.fg{margin-bottom:13px}.fg label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.fg .err{color:var(--red);font-size:12px;margin-top:4px}
+.modal-bg{position:fixed;inset:0;background:rgba(5,12,32,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.modal{background:var(--surface);border-radius:16px;padding:26px;width:440px;max-width:100%;max-height:92vh;overflow:auto}.modal h3{margin-bottom:18px}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:200}.toast{background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;border-left:4px solid var(--green);box-shadow:var(--shadow)}.toast.error{border-left-color:var(--red)}
+.empty{text-align:center;padding:44px;color:var(--muted)}.skel{height:64px;border-radius:12px;background:linear-gradient(90deg,var(--surface2),var(--surface),var(--surface2));background-size:200%;animation:sh 1.2s infinite;margin-bottom:10px}@keyframes sh{to{background-position:-200%}}
+.books{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.book{padding:0;overflow:hidden;cursor:pointer;transition:.18s}.book:hover{transform:translateY(-3px)}
+.cover{height:120px;display:grid;place-items:center;color:#fff;font:700 42px 'Sora'}.book .info{padding:14px}.book h4{font-size:14px;margin-bottom:3px;line-height:1.3}.book .au{color:var(--muted);font-size:12px;margin-bottom:10px}
+.hello{background:linear-gradient(120deg,var(--navy),#2548b8);color:#fff;border:0;margin-bottom:18px}.hello h2{font-size:22px;margin-bottom:6px}.hello input{margin-top:14px;background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.25)}.hello input::placeholder{color:#cdd7f6}
+.note{padding:11px 14px;border-radius:10px;margin-bottom:8px;font-size:13px}.note.danger{background:rgba(239,68,68,.12);color:var(--red)}.note.warn{background:rgba(245,158,11,.14);color:#b47600}
+.bar{height:8px;border-radius:6px;background:var(--surface2);margin-top:5px}.bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--teal))}
+.two{grid-template-columns:1fr 1fr}
+@media(max-width:900px){.login{grid-template-columns:1fr}.login-brand{display:none}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0;padding:0 16px 30px}.burger{display:inline-flex}.two{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div id="toasts"></div>
+<div id="login" class="login hide">
+  <div class="login-brand"><h1>📚 LibraryMS</h1><p>Borrow, return and track every book — one portal for librarians and students.</p>
+    <div class="shelf"><i style="height:60px"></i><i style="height:80px"></i><i style="height:48px"></i><i style="height:90px"></i><i style="height:66px"></i><i style="height:76px"></i></div></div>
+  <div class="login-form"><div class="login-card"><h2>Welcome back</h2><div class="sub">Sign in with your username or enrollment number</div>
+    <div class="fg"><label>Username / Enrollment No.</label><input id="lu" autocomplete="username"></div>
+    <div class="fg"><label>Password</label><input id="lp" type="password" autocomplete="current-password"><div class="err" id="le"></div></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">Sign in</button></div></div>
+</div>
+<div id="app" class="hide">
+  <aside class="sidebar" id="side"><div class="brand">📚 LibraryMS<small id="roleTag"></small></div><div id="nav"></div>
+    <div class="side-foot"><div id="who"></div><button class="btn btn-sm" onclick="toggleTheme()">🌓 Theme</button><button class="btn btn-sm btn-danger" onclick="logout()">Logout</button></div></aside>
+  <main class="main"><div class="topbar"><button class="btn burger" onclick="side.classList.toggle('open')">☰</button><h1 id="title"></h1><div class="avatar" id="av"></div></div><div id="view"></div></main>
+</div>
+<script>
+// ---------- tiny helpers ----------
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let me = null, token = sessionStorage.getItem('lms_token');
+async function api(path, method = 'GET', body) {
+  const r = await fetch('/api' + path, { method, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401 && token) { logout(); throw new Error(d.error); }
+  if (!r.ok) throw new Error(d.error || 'Something went wrong');
+  return d;
+}
+function toast(msg, type = '') { const t = document.createElement('div'); t.className = 'toast ' + type; t.textContent = msg; $('#toasts').append(t); setTimeout(() => t.remove(), 3500); }
+const skeleton = () => '<div class="skel"></div>'.repeat(4);
+const money = n => '₹' + Number(n || 0).toFixed(2).replace(/\.00$/, '');
+const badge = s => ({ active: '<span class="badge b-blue">Borrowed</span>', overdue: '<span class="badge b-red">Overdue</span>', returned: '<span class="badge b-green">Returned</span>' }[s]);
+const empty = (i, t) => `<div class="empty"><div style="font-size:34px">${i}</div>${t}</div>`;
+const hue = s => [...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+const cover = b => `<div class="cover" style="background:linear-gradient(135deg,hsl(${hue(b.title)} 55% 32%),hsl(${(hue(b.title) + 40) % 360} 60% 45%))">${esc(b.title[0])}</div>`;
+function toggleTheme() { const n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = n; localStorage.setItem('lms_theme', n); }
+document.documentElement.dataset.theme = localStorage.getItem('lms_theme') || 'light';
+
+// modal + confirm; fields: [{id,label,type,value,options}]
+function modal(title, bodyHtml, onSave, saveLabel = 'Save') {
+  const bg = document.createElement('div'); bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div>${bodyHtml}</div><div class="actions"><button class="btn" data-x>Cancel</button>${onSave ? `<button class="btn btn-primary" data-ok>${saveLabel}</button>` : ''}</div></div>`;
+  document.body.append(bg); const close = () => bg.remove();
+  bg.onclick = e => { if (e.target === bg || e.target.dataset.x !== undefined) close(); };
+  const ok = bg.querySelector('[data-ok]');
+  if (ok) ok.onclick = async () => {
+    bg.querySelectorAll('.err').forEach(e => e.remove()); ok.disabled = true;
+    try { await onSave(bg); close(); } catch (e) {
+      const m = e.message.toLowerCase(), inputs = [...bg.querySelectorAll('input,select')];
+      const hit = inputs.find(i => m.includes((i.dataset.k || i.id).replace('_', ' ').split(' ')[0].toLowerCase()));
+      const msg = document.createElement('div'); msg.className = 'err'; msg.textContent = e.message;
+      (hit ? hit.parentElement : bg.querySelector('.modal > div')).append(msg);
+    } finally { ok.disabled = false; }
+  };
+  return bg;
+}
+const confirmBox = (text, fn, label = 'Confirm') => modal('Please confirm', `<p>${esc(text)}</p>`, async () => { await fn(); }, label);
+const field = (id, label, v = '', type = 'text', extra = '') => `<div class="fg"><label>${label}</label><input id="f_${id}" data-k="${id}" type="${type}" value="${esc(v)}" ${extra}></div>`;
+const val = (bg, id) => bg.querySelector('#f_' + id).value;
+
+// ---------- auth ----------
+async function doLogin() {
+  $('#le').textContent = '';
+  try { const d = await api('/login', 'POST', { username: $('#lu').value, password: $('#lp').value }); token = d.token; sessionStorage.setItem('lms_token', token); start(d.user); }
+  catch (e) { $('#le').textContent = e.message; }
+}
+$('#lp').addEventListener('keydown', e => e.key === 'Enter' && doLogin());
+function logout() { sessionStorage.removeItem('lms_token'); token = null; me = null; $('#app').classList.add('hide'); $('#login').classList.remove('hide'); $('#lp').value = ''; }
+
+const NAVS = {
+  admin: [['dashboard', '🏠', 'Dashboard'], ['books', '📖', 'Books'], ['students', '🎓', 'Students'], ['loans', '🔁', 'Loans'], ['fines', '💰', 'Fines'], ['settings', '⚙️', 'Settings']],
+  student: [['home', '🏠', 'My Dashboard'], ['catalog', '📖', 'Catalog'], ['history', '🕘', 'My History'], ['profile', '👤', 'Profile']]
+};
+function start(user) {
+  me = user; $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+  $('#roleTag').textContent = user.role === 'admin' ? 'Librarian console' : 'Student portal'; $('#who').textContent = user.name; $('#av').textContent = user.name[0].toUpperCase();
+  $('#nav').innerHTML = NAVS[user.role].map(([k, i, l]) => `<div class="nav" data-p="${k}" onclick="go('${k}')"><span>${i}</span>${l}</div>`).join('');
+  go(NAVS[user.role][0][0]);
+}
+async function go(page, arg) {
+  side.classList.remove('open');
+  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.p === page));
+  $('#title').textContent = NAVS[me.role].find(n => n[0] === page)[2]; $('#view').innerHTML = skeleton();
+  try { $('#view').innerHTML = await PAGES[page](arg); PAGES[page + '_after']?.(arg); } catch (e) { $('#view').innerHTML = empty('⚠️', esc(e.message)); }
+}
+const refresh = () => go(document.querySelector('.nav.active').dataset.p);
+
+// ---------- shared: book cards / details ----------
+const availBadge = b => b.available > 0 ? `<span class="badge b-green">${b.available} available</span>` : '<span class="badge b-red">All issued</span>';
+const bookCards = list => list.length ? `<div class="grid books">${list.map(b => `<div class="card book" onclick="bookDetails(${b.id})">${cover(b)}<div class="info"><h4>${esc(b.title)}</h4><div class="au">${esc(b.author)}</div><span class="badge b-blue">${esc(b.category)}</span> ${availBadge(b)}</div></div>`).join('')}</div>` : empty('📚', 'No books match your search.');
+async function bookDetails(id) {
+  const b = (await api('/books')).find(x => x.id === id);
+  modal(b.title, `${cover(b).replace('height:120px', 'height:90px;border-radius:12px;margin-bottom:14px')}<p><b>${esc(b.author)}</b></p><p class="mono" style="margin:8px 0">ISBN: ${esc(b.isbn || '—')} · Publisher: ${esc(b.publisher || '—')}</p><p><span class="badge b-blue">${esc(b.category)}</span> ${availBadge(b)} <span class="mono">${b.copies} total copies</span></p>`).querySelector('[data-x]').textContent = 'Close';
+}
+
+// ---------- ADMIN pages ----------
+const PAGES = {
+  async dashboard() {
+    const s = await api('/stats'), max = Math.max(1, ...s.top_books.map(t => t.n));
+    return `<div class="row"><button class="btn btn-primary" onclick="bookForm()">+ Add book</button><button class="btn" onclick="studentForm()">+ Register student</button><button class="btn" onclick="issueForm()">Issue book</button><button class="btn" onclick="go('loans')">Process return</button></div>
+    <div class="grid stats">${[['Book titles', s.titles, ''], ['Total copies', s.copies, 't'], ['Available', s.available, 'g'], ['Issued', s.issued, 'a'], ['Overdue', s.overdue, 'r'], ['Students', s.students, ''], ['Fines outstanding', money(s.fines_outstanding), 'r']].map(([l, v, c]) => `<div class="card stat ${c}"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('')}</div>
+    <div class="grid two"><div class="card"><b>Most borrowed</b>${s.top_books.length ? s.top_books.map(t => `<div style="margin-top:12px;font-size:13px">${esc(t.title)} <span class="mono">· ${t.n}</span><div class="bar"><i style="width:${t.n / max * 100}%"></i></div></div>`).join('') : empty('📊', 'No borrowing yet')}</div>
+    <div class="card table-wrap"><div style="padding:18px 18px 8px"><b>Recent activity</b></div>${loanTable(s.recent, false)}</div></div>`;
+  },
+  async books() {
+    return `<div class="row"><input class="grow" id="bq" placeholder="Search title, author, ISBN, category…" oninput="loadBooks()"><label class="mono"><input type="checkbox" id="barch" style="width:auto" onchange="loadBooks()"> show archived</label><button class="btn btn-primary" onclick="bookForm()">+ Add book</button></div><div class="card table-wrap" id="bt">${skeleton()}</div>`;
+  },
+  books_after() { loadBooks(); },
+  async students() {
+    return `<div class="row"><input class="grow" id="sq" placeholder="Search students…" oninput="loadStudents()"><button class="btn btn-primary" onclick="studentForm()">+ Register student</button></div><div class="card table-wrap" id="st">${skeleton()}</div>`;
+  },
+  students_after() { loadStudents(); },
+  async loans() {
+    return `<div class="row"><select id="lf" style="width:auto" onchange="loadLoans()"><option value="active">Active loans</option><option value="overdue">Overdue</option><option value="returned">Returned (history)</option><option value="">All</option></select><div class="grow"></div><button class="btn btn-primary" onclick="issueForm()">+ Issue book</button></div><div class="card table-wrap" id="lt">${skeleton()}</div>`;
+  },
+  loans_after() { loadLoans(); },
+  async fines() {
+    const f = await api('/fines');
+    return `<div class="card table-wrap">${f.length ? `<table><thead><tr><th>Student</th><th>Book</th><th>Days late</th><th>Fine</th><th>Paid</th><th>Balance</th><th></th></tr></thead><tbody>${f.map(x => `<tr><td>${esc(x.student_name)}<div class="mono">${esc(x.enrollment)}</div></td><td>${esc(x.title)}</td><td>${x.overdue_days}</td><td>${money(x.amount)}</td><td>${money(x.paid)}</td><td><b>${money(x.balance)}</b></td><td>${x.balance > 0 ? `<button class="btn btn-sm btn-ok" onclick="payForm(${x.id},${x.balance})">Record payment</button>` : '<span class="badge b-green">Paid</span>'}</td></tr>`).join('')}</tbody></table>` : empty('💰', 'No fines recorded yet.')}</div><p class="mono" style="margin-top:12px">Fines are assessed when a late book is returned. Books still overdue show their running fine on the Loans page.</p>`;
+  },
+  async settings() {
+    const s = await api('/settings');
+    return `<div class="card" style="max-width:460px"><b>Borrowing rules</b><div style="height:14px"></div>${field('loan_days', 'Loan period (days)', s.loan_days, 'number')}${field('fine_per_day', 'Fine per overdue day (₹)', s.fine_per_day, 'number')}${field('grace_days', 'Grace period (days after due date, no fine)', s.grace_days, 'number')}${field('max_loans', 'Max books per student', s.max_loans, 'number')}<p class="mono" style="margin-bottom:12px">Fine = (days after due date − grace days) × daily rate. Example: 3 days late at ₹5 = ₹15.</p><button class="btn btn-primary" onclick="saveSettings()">Save settings</button></div>`;
+  },
+
+  // ---------- STUDENT pages ----------
+  async home() {
+    const d = await api('/my/loans'), cur = d.loans.filter(l => l.status !== 'returned'), first = me.name.split(' ')[0];
+    return `<div class="card hello"><h2>Welcome back, ${esc(first)} 👋</h2><div style="opacity:.8">Find your next read.</div><input id="hq" placeholder="Search title, author, ISBN or category…" onkeydown="if(event.key==='Enter')go('catalog',this.value)"></div>
+    <div class="grid stats"><div class="card stat"><div class="l">Currently borrowed</div><div class="v">${cur.length}</div></div><div class="card stat r"><div class="l">Overdue</div><div class="v">${cur.filter(l => l.status === 'overdue').length}</div></div><div class="card stat a"><div class="l">Fine balance</div><div class="v">${money(d.fine_due)}</div></div></div>
+    ${d.notifications.length ? `<div style="margin-bottom:18px"><b>🔔 Notifications</b><div style="height:10px"></div>${d.notifications.map(n => `<div class="note ${n.type}">${esc(n.text)}</div>`).join('')}</div>` : ''}
+    <b>My books</b><div style="height:10px"></div><div class="card table-wrap">${cur.length ? myTable(cur) : empty('📖', 'You have no books borrowed right now.')}</div>
+    ${d.fine_due > 0 ? `<p class="mono" style="margin-top:12px">Pay fines at the library desk. Rate: ${money(d.fine_per_day)} per overdue day.</p>` : ''}`;
+  },
+  async catalog(q = '') {
+    const cats = await api('/categories');
+    return `<div class="row"><input class="grow" id="cq" value="${esc(q)}" placeholder="Search title, author, ISBN, category…" oninput="loadCatalog()"><select id="cc" style="width:auto" onchange="loadCatalog()"><option value="">All categories</option>${cats.map(c => `<option>${esc(c)}</option>`).join('')}</select><select id="ca" style="width:auto" onchange="loadCatalog()"><option value="">Any availability</option><option value="1">Available now</option></select><select id="cs" style="width:auto" onchange="loadCatalog()"><option value="title">Sort: Title</option><option value="author">Sort: Author</option><option value="newest">Sort: Newest</option></select></div><div id="cg">${skeleton()}</div>`;
+  },
+  catalog_after() { loadCatalog(); },
+  async history() {
+    const d = await api('/my/loans'); return `<div class="card table-wrap">${d.loans.length ? myTable(d.loans) : empty('🕘', 'No borrowing history yet.')}</div>`;
+  },
+  async profile() {
+    const u = await api('/me');
+    return `<div class="card" style="max-width:460px"><div class="fg"><label>Enrollment / username</label><input value="${esc(u.username)}" disabled></div>${field('name', 'Full name', u.name)}${field('email', 'Email', u.email || '', 'email')}${field('password', 'New password (leave blank to keep)', '', 'password')}<button class="btn btn-primary" onclick="saveProfile()">Save profile</button></div>`;
+  }
+};
+
+const myTable = l => `<table><thead><tr><th>Book</th><th>Issued</th><th>Due</th><th>Returned</th><th>Status</th><th>Fine</th></tr></thead><tbody>${l.map(x => `<tr><td><b>${esc(x.title)}</b><div class="mono">${esc(x.author)}</div></td><td>${x.issue_date}</td><td>${x.due_date}</td><td>${x.return_date || '—'}</td><td>${badge(x.status)}</td><td>${x.fine ? `<span style="color:var(--red)">${money(x.fine)}${x.status === 'overdue' ? ' (so far)' : ''}</span>` : '—'}</td></tr>`).join('')}</tbody></table>`;
+const loanTable = (l, actions = true) => l.length ? `<table><thead><tr><th>Student</th><th>Book</th><th>Issued</th><th>Due</th><th>Status</th><th>Fine</th>${actions ? '<th></th>' : ''}</tr></thead><tbody>${l.map(x => `<tr><td>${esc(x.student_name)}<div class="mono">${esc(x.enrollment)}</div></td><td>${esc(x.title)}</td><td>${x.issue_date}</td><td>${x.due_date}</td><td>${badge(x.status)}</td><td>${x.fine ? money(x.fine) : '—'}</td>${actions ? `<td>${x.status !== 'returned' ? `<button class="btn btn-sm btn-primary" onclick="returnLoan(${x.id},'${esc(x.title).replace(/'/g, '')}')">Return</button>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table>` : empty('🔁', 'Nothing here yet.');
+
+// ---------- admin actions ----------
+let t; const debounce = fn => { clearTimeout(t); t = setTimeout(fn, 250); };
+function loadBooks() { debounce(async () => {
+  const b = await api(`/books?q=${encodeURIComponent($('#bq').value)}&archived=${$('#barch').checked ? 1 : 0}`);
+  $('#bt').innerHTML = b.length ? `<table><thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Category</th><th>Copies</th><th></th></tr></thead><tbody>${b.map(x => `<tr><td><b>${esc(x.title)}</b>${x.archived ? ' <span class="badge b-grey">archived</span>' : ''}</td><td>${esc(x.author)}</td><td class="mono">${esc(x.isbn || '—')}</td><td><span class="badge b-blue">${esc(x.category)}</span></td><td>${x.available}/${x.copies} <span class="mono">free</span></td><td style="white-space:nowrap"><button class="btn btn-sm" onclick='bookForm(${JSON.stringify(x).replace(/'/g, '&#39;')})'>Edit</button> <button class="btn btn-sm btn-danger" onclick="archiveBook(${x.id},${x.archived ? 0 : 1})">${x.archived ? 'Restore' : 'Archive'}</button></td></tr>`).join('')}</tbody></table>` : empty('📚', 'No books found. Add one!'); }); }
+function bookForm(b = {}) {
+  modal(b.id ? 'Edit book' : 'Add book', field('title', 'Title', b.title) + field('author', 'Author', b.author) + field('isbn', 'ISBN (optional)', b.isbn) + field('category', 'Category', b.category) + field('publisher', 'Publisher (optional)', b.publisher) + field('copies', 'Number of copies', b.copies || 1, 'number'),
+    async bg => { const body = Object.fromEntries(['title', 'author', 'isbn', 'category', 'publisher', 'copies'].map(k => [k, val(bg, k)])); await api(b.id ? '/books/' + b.id : '/books', b.id ? 'PUT' : 'POST', body); toast('Book saved'); refresh(); });
+}
+const archiveBook = (id, a) => confirmBox(a ? 'Archive this book? It will be hidden from the catalog; borrowing history is kept.' : 'Restore this book?', async () => { await api(`/books/${id}/archive`, 'POST', { archived: !!a }); toast('Done'); refresh(); });
+async function loadStudents() { debounce(async () => {
+  const s = await api('/students?q=' + encodeURIComponent($('#sq').value));
+  $('#st').innerHTML = s.length ? `<table><thead><tr><th>Enrollment</th><th>Name</th><th>Email</th><th>Books</th><th>Fine due</th><th>Status</th><th></th></tr></thead><tbody>${s.map(x => `<tr><td class="mono">${esc(x.username)}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.email || '—')}</td><td>${x.borrowed}</td><td>${Number(x.fine_due) ? money(x.fine_due) : '—'}</td><td>${x.active ? '<span class="badge b-green">Active</span>' : '<span class="badge b-grey">Inactive</span>'}</td><td style="white-space:nowrap"><button class="btn btn-sm" onclick='studentForm(${JSON.stringify(x).replace(/'/g, '&#39;')})'>Edit</button> <button class="btn btn-sm ${x.active ? 'btn-danger' : 'btn-ok'}" onclick="toggleStudent(${x.id},${x.active ? 0 : 1})">${x.active ? 'Deactivate' : 'Activate'}</button></td></tr>`).join('')}</tbody></table>` : empty('🎓', 'No students found.'); }); }
+function studentForm(s = {}) {
+  modal(s.id ? 'Edit student' : 'Register student', (s.id ? '' : field('username', 'Enrollment No.', '', 'text', 'placeholder="e.g. 22BCA001"')) + field('name', 'Full name', s.name) + field('email', 'Email (optional)', s.email, 'email') + field('password', s.id ? 'Reset password (optional)' : 'Initial password (min 8 chars)', '', 'password'),
+    async bg => { const body = { name: val(bg, 'name'), email: val(bg, 'email'), password: val(bg, 'password') }; if (!s.id) body.username = val(bg, 'username'); await api(s.id ? '/students/' + s.id : '/students', s.id ? 'PUT' : 'POST', body); toast('Student saved'); refresh(); });
+}
+const toggleStudent = (id, a) => confirmBox(a ? 'Activate this account?' : 'Deactivate this account? The student will not be able to log in or borrow.', async () => { await api(`/students/${id}/active`, 'POST', { active: !!a }); toast('Updated'); refresh(); });
+async function loadLoans() { const l = await api('/loans?status=' + $('#lf').value); $('#lt').innerHTML = loanTable(l); }
+async function issueForm() {
+  const [st, bk] = await Promise.all([api('/students'), api('/books?available=1')]);
+  modal('Issue book', `<div class="fg"><label>Student</label><select id="f_user" data-k="student">${st.filter(s => s.active).map(s => `<option value="${s.id}">${esc(s.name)} (${esc(s.username)})</option>`).join('')}</select></div><div class="fg"><label>Book</label><select id="f_book" data-k="book">${bk.map(b => `<option value="${b.id}">${esc(b.title)} — ${b.available} left</option>`).join('')}</select></div><p class="mono">Issue date is today; the due date is set automatically from the loan period.</p>`,
+    async bg => { await api('/loans', 'POST', { user_id: val(bg, 'user'), book_id: val(bg, 'book') }); toast('Book issued'); refresh(); }, 'Issue');
+}
+const returnLoan = (id, title) => confirmBox(`Accept return of "${title}"?`, async () => { const r = await api(`/loans/${id}/return`, 'POST'); toast(r.fine ? `Returned. Fine: ${money(r.fine)} (${r.overdue_days} days)` : 'Returned on time'); refresh(); }, 'Accept return');
+const payForm = (id, bal) => modal('Record payment', `<p style="margin-bottom:12px">Outstanding balance: <b>${money(bal)}</b></p>` + field('amount', 'Amount received (₹)', bal, 'number', 'step="0.01"'), async bg => { await api(`/fines/${id}/pay`, 'POST', { amount: val(bg, 'amount') }); toast('Payment recorded'); refresh(); });
+async function saveSettings() { try { await api('/settings', 'PUT', Object.fromEntries(['loan_days', 'fine_per_day', 'grace_days', 'max_loans'].map(k => [k, $('#f_' + k).value]))); toast('Settings saved'); } catch (e) { toast(e.message, 'error'); } }
+
+// ---------- student actions ----------
+function loadCatalog() { debounce(async () => {
+  const p = new URLSearchParams({ q: $('#cq').value, category: $('#cc').value, available: $('#ca').value, sort: $('#cs').value });
+  $('#cg').innerHTML = bookCards(await api('/books?' + p)); }); }
+async function saveProfile() { try { await api('/me', 'PUT', { name: $('#f_name').value, email: $('#f_email').value, password: $('#f_password').value }); toast('Profile updated'); me.name = $('#f_name').value; $('#who').textContent = me.name; } catch (e) { toast(e.message, 'error'); } }
+
+// ---------- boot ----------
+if (token) api('/me').then(u => start(u)).catch(() => $('#login').classList.remove('hide')); else $('#login').classList.remove('hide');
+</script></body></html>
